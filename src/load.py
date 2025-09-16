@@ -3,7 +3,7 @@ Load module for the SQL-based ETL process.
 Handles uploading invoices to Google Drive.
 """
 from src.drive_manager import DriveManager
-from config.config import DRIVE_FOLDER, OUTPUT_FILENAME_TEMPLATE, CREDENTIALS_PATH, TOKEN_PATH
+from config.config import DRIVE_FOLDER, OUTPUT_FILENAME_TEMPLATE, TOKEN_PATH
 from src.transform import generate_reference
 from utils.logging_config import logger
 
@@ -24,10 +24,15 @@ def load_invoices_to_drive(invoices):
     logger.info(f"Starting upload of {len(invoices)} invoices to Google Drive")
     
     # Initialize DriveManager
-    drive_manager = DriveManager(CREDENTIALS_PATH, TOKEN_PATH)
+    drive_manager = DriveManager(token_path=str(TOKEN_PATH))
     
     try:
         # Authenticate
+        if drive_manager.is_authenticated():
+            print("✅ Ya autenticado, conectando...")
+        else:
+            print("🔐 Primera vez - se abrirá el navegador")
+        
         drive_manager.authenticate()
         
         # Test connection
